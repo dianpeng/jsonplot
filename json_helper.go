@@ -169,18 +169,48 @@ func JsonListToPointList(v Value) (*plotter.XYs, error) {
 		return nil, fmt.Errorf("value is not type list but type %s", v.Type.GetName())
 	}
 
-	pts := make(plotter.XYs, len(v.List.Value))
+	if len(v.List.Value) == 0 {
+		ret := make(plotter.XYs, 0)
+		return &ret, nil
+	} else {
+		var ret *plotter.XYs
+		// decide whether its a list of raw points or a list of objects
+		if v.List.Value[0].Type == kValueTypeObject {
+			pts := make(plotter.XYs, len(v.List.Value))
+			for idx, element := range v.List.Value {
+				if x, y, err := JsonObjectToPoint(element); err != nil {
+					return nil, fmt.Errorf("index %d failed to parse as point due to reason %v", idx, err)
+				} else {
+					pts[idx].X = x
+					pts[idx].Y = y
+				}
+			}
+			ret = &pts
+		} else if v.List.Value[0].Type == kValueTypeNumber {
+			sz := len(v.List.Value)
+			if sz%2 != 0 {
+				sz = sz - 1
+			}
 
-	for idx, element := range v.List.Value {
-		if x, y, err := JsonObjectToPoint(element); err != nil {
-			return nil, fmt.Errorf("index %d failed to parse as point due to reason %v", idx, err)
-		} else {
-			pts[idx].X = x
-			pts[idx].Y = y
+			pts := make(plotter.XYs, sz/2)
+
+			idx := 0
+			for i := 0; i < sz; i += 2 {
+				x := v.List.Value[i]
+				y := v.List.Value[i+1]
+
+				if x.Type != kValueTypeNumber || y.Type != kValueTypeNumber {
+					return nil, fmt.Errorf("index %d, failed to parse 2 consecutive number", i)
+				}
+
+				pts[idx].X = x.Number
+				pts[idx].Y = y.Number
+				idx++
+			}
+			ret = &pts
 		}
+		return ret, nil
 	}
-
-	return &pts, nil
 }
 
 func JsonListToVector(v Value) (*plotter.Values, error) {

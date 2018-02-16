@@ -13,6 +13,8 @@
                 }
         },
         {
+                "__comment": "this is an exmaple used to show how to do dot-plot",
+
                 "Type" : "dot-plotter",
                 "Path" : "dot-plotter.png",
                 "Config" : {
@@ -22,7 +24,11 @@
                         "Size" : 10,
                         "Data" : {
                                 "First" : [ {"X" : 0 , "Y" : 1 } , { "X" : 2 , "Y" : 3 } ],
-                                "Second": [ {"X" : 10, "Y" : 20} , { "X" : -2, "Y" : -10}]
+                                "Second": [ {"X" : 10, "Y" : 20} , { "X" : -2, "Y" : -10}],
+
+                                "__comment":" this list of number indicates another way to specify points, basically a list of x,y",
+
+                                "Third" : [ 0 , 1, 0 , 2 , 0 , 3 , 1 , 2 , 1 , 4 , 10 ,5, 11,2, 13,4]
                         }
                 }
         },

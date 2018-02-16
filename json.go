@@ -29,6 +29,8 @@ const (
 	kJsonTokenEof
 )
 
+const kCommentString = "__comment"
+
 type JsonLexeme struct {
 	String  string
 	Boolean bool
@@ -361,7 +363,12 @@ func (parser *JsonParser) parseObject() (Value, error) {
 			if value, err := parser.parseValue(); err != nil {
 				return NewNull(), err
 			} else {
-				obj.Value[key] = value
+				if key != kCommentString {
+					obj.Value[key] = value
+				}
+
+				// ignore __comment as key's entry inside of object since we treat
+				// this kinds of entry as comment
 			}
 
 			if parser.Lexer.Lexeme.Token == kJsonTokenComma {
